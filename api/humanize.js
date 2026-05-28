@@ -13,36 +13,36 @@ export default async function handler(req, res) {
 
 Patrones a eliminar:
 - Inflación de importancia: "momento pivotal", "testamento de", "subraya la importancia", "paisaje en evolución", "transformador", "innovador", "sin precedentes"
-- Regla de tres forzada: listas de "X, Y y Z" por todas partes
+- Regla de tres forzada
 - Vocabulario IA: "profundizar", "tapiz", "crucial", "vital", "robusto", "aprovechar", "utilizar", "delve", "tapestry", "groundbreaking"
 - Relleno gerundivo: "mostrando cómo", "destacando la", "subrayando su"
 - Frases de relleno: "En conclusión", "Es importante señalar", "Vale la pena notar", "Cabe destacar"
-- Exceso de rayas em (—)
+- Exceso de rayas em
 - Cierres genéricos optimistas
-- Evitar cópula: convertir "X es Y" en "X sirve como Y", "X funciona como Y"
-- Cobertura mediática sin contexto
+- Evitar cópula: convertir "X es Y" en "X sirve como Y"
 - Hedging falso: "podría potencialmente argumentarse"
 
-${personality ? 'Añade voz genuina: varía la longitud de oraciones, incluye reacciones y opiniones, deja entrar algo de desorden. Oraciones cortas mezcladas con largas. Reacciona a los hechos en lugar de solo reportarlos.' : 'Mantén un tono neutro y limpio.'}
+${personality ? 'Añade voz genuina: varía la longitud de oraciones, incluye reacciones y opiniones. Oraciones cortas mezcladas con largas.' : 'Mantén un tono neutro y limpio.'}
 
 Mantén el idioma del texto original.
 
 ${audit ? `Responde ÚNICAMENTE con JSON válido, sin markdown, sin backticks:
-{"audit":"Diagnóstico de 2-3 oraciones sobre qué hacía al texto sonar a IA. Sé específico.","rewrite":"El texto humanizado final"}` : 'Responde únicamente con el texto humanizado, sin explicación ni JSON.'}`;
+{"audit":"Diagnóstico de 2-3 oraciones sobre qué hacía al texto sonar a IA.","rewrite":"El texto humanizado final"}` : 'Responde únicamente con el texto humanizado, sin explicación ni JSON.'}`;
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'llama-3.3-70b-versatile',
         max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: text }]
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: text }
+        ]
       })
     });
 
@@ -52,7 +52,7 @@ ${audit ? `Responde ÚNICAMENTE con JSON válido, sin markdown, sin backticks:
     }
 
     const data = await response.json();
-    const result = data.content.map(i => i.text || '').join('');
+    const result = data.choices?.[0]?.message?.content || '';
     return res.status(200).json({ result });
 
   } catch (err) {
