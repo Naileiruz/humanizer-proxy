@@ -42,7 +42,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 <body>
 <header>
   <h1>Humanizador de texto</h1>
-  <span>powered by Gemini</span>
+  <span>powered by groq</span>
 </header>
 <div class="container">
   <div class="cols">
