@@ -4,5 +4,9 @@
     "api/humanize.js": {
       "runtime": "nodejs20.x"
     }
-  }
+  },
+  "routes": [
+    { "src": "/api/humanize", "dest": "/api/humanize.js" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ]
 }
