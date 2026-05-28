@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "functions": {
+    "api/humanize.js": {
+      "runtime": "nodejs20.x"
+    },
+    "api/index.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "routes": [
+    { "src": "/api/humanize", "dest": "/api/humanize.js" },
+    { "src": "/", "dest": "/api/index.js" }
+  ]
+}
